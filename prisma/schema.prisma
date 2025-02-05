@@ -19,16 +19,24 @@ model Bankcard{
   cardNumber String @unique @db.VarChar(20)
   country String
   expiryDate String 
-  userId String 
+  userId String @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  user User[]
+
 }
 
 model User {
-  id String @id @default(nanoid())
+  id                 Int        @id @default(autoincrement())
+  email              String     @unique
+  password           String
+  username           String     @unique
+  receivedDonations  Donation[]
+  profile Profile
   bankCard Bankcard @relation(fields: [bankCardId],references: [id])
   bankCardId String
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
 }
 
 model Profile {
