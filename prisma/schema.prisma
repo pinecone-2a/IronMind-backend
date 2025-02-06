@@ -20,23 +20,26 @@ model Bankcard{
   country String
   expiryDate String 
   userId String @unique
+  user User  @relation(fields: [userId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
 }
 
 model User {
-  id                 Int        @id @default(autoincrement())
+   id String @id @default(nanoid())
   email              String     @unique
   password           String
   username           String     @unique
-  receivedDonations  Donation[]
-  profile Profile
-  bankCard Bankcard @relation(fields: [bankCardId],references: [id])
-  bankCardId String
+  profile Profile?
+  bankCard Bankcard?
+  bankCardId String @unique
+  profileId String @unique
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
+
+  receivedDonations Donation[]
 }
 
 model Profile {
@@ -47,10 +50,11 @@ model Profile {
   socialMediaURL String
   backgroundImage String
   successMessage String
+  userId String @unique @default(nanoid())
+  user User  @relation(fields: [userId],references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  
-  
+
 }
 
 model Donation {
@@ -58,9 +62,13 @@ model Donation {
    amount Int
    specialMessage String
    socialURLOrBuyMeACoffe String
-   donorId Int
-   recipientId Int
-  createdAt DateTime @default(now())
+   donorId String @unique
+   recipientId String @unique
+
+   donor User  @relation(fields: [donorId],references: [id])
+   
+   
+   createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
    
 

@@ -4,14 +4,15 @@ const express = require("express");
 export const profileRouter = Router();
 
 profileRouter.post("/create", async (req: Request, res: Response) => {
+  const { body } = req;
   const profile = await prisma.profile.create({
     data: {
-      name: req.body.name,
-      about: req.body.about,
-      avatarImage: req.body.avatarImage,
-      socialMediaURL: req.body.socialMediaURL,
-      backgroundImage: req.body.backgroundImage,
-      successMessage: req.body.successMessage,
+      name: body.name,
+      about: body.about,
+      avatarImage: body.avatarImage,
+      socialMediaURL: body.socialMediaURL,
+      backgroundImage: body.backgroundImage,
+      successMessage: body.successMessage,
     },
   });
   res.json(profile);
