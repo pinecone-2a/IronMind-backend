@@ -13,63 +13,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Bankcard{
-  id String @id @default(nanoid())
-  cardNumber String @unique @db.VarChar(20)
-  country String
-  expiryDate String 
-  userId String @unique
-  user User  @relation(fields: [userId],references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
+model Bankcard {
+  id         String   @id @default(nanoid())
+  cardNumber String   @unique @db.VarChar(20)
+  country    String
+  expiryDate String
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
 model User {
-   id String @id @default(nanoid())
-  email              String     @unique
-  password           String
-  username           String     @unique
-  profile Profile?
-  bankCard Bankcard?
-  bankCardId String @unique
-  profileId String @unique
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id        String    @id @default(nanoid())
+  email     String    @unique
+  password  String
+  username  String    @unique
+  profile   Profile?
+  bankCard  Bankcard?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-
-  receivedDonations Donation[]
+  donations         Donation[] @relation("donor")
+  receivedDonations Donation[] @relation("recipient")
 }
 
 model Profile {
-  id String @id @default(nanoid())
-  name String
-  about String
-  avatarImage String
-  socialMediaURL String
+  id              String   @id @default(nanoid())
+  name            String
+  about           String
+  avatarImage     String
+  socialMediaURL  String
   backgroundImage String
-  successMessage String
-  userId String @unique @default(nanoid())
-  user User  @relation(fields: [userId],references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
+  successMessage  String
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
 }
 
 model Donation {
-   id String @id @default(nanoid())
-   amount Int
-   specialMessage String
-   socialURLOrBuyMeACoffe String
-   donorId String @unique
-   recipientId String @unique
+  id                      String @id @default(nanoid())
+  amount                  Int
+  specialMessage          String
+  socialURLOrBuyMeACoffee String
+  donorId                 String @unique
+  recipientId             String @unique
 
-   donor User  @relation(fields: [donorId],references: [id])
-   
-   
-   createdAt DateTime @default(now())
-    updatedAt DateTime @default(now())
-   
+  donor     User @relation("donor", fields: [donorId], references: [id])
+  recipient User @relation("recipient", fields: [recipientId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
