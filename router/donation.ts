@@ -10,17 +10,17 @@ donationRouter.post("/", async (req: Request, res: Response) => {
       amount: 8210,
       specialMessage: "buy coffee",
       socialURLOrBuyMeACoffee: "dhiwahdidaw",
-      donorId: "KEUUmof9rIwwDRYAGGzni",
-      recipientId: "nHvliOYxZesv2rMZ2lv1cdwdaw",
+      donorId: "24",
+      recipientId: "42f4"
     },
   });
   res.json(donation);
 });
 donationRouter.get("/", async (req: Request, res: Response) => {
   const data = await prisma.donation.findMany({
-    include: {
-      donor: true,
-      recipient: true,
+    select: {
+      donorId: true,
+      recipientId: true,
     },
   });
   res.json(data);

@@ -17,6 +17,8 @@ model Bankcard {
   id         String   @id @default(nanoid())
   cardNumber String   @unique @db.VarChar(20)
   country    String
+  firstName  String
+  lastName   String
   expiryDate String
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id])
