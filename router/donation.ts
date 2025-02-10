@@ -3,6 +3,24 @@ import { Router, Request, Response } from "express";
 import { prisma } from "..";
 const express = require("express");
 export const donationRouter = Router();
+export const getDonations = async (req: Request, res: Response) => {
+  const recipientId = req.params.recipientId;
+
+  const today = new Date();
+  const before30Day = today.getDay() - 30;
+  const donations = await prisma.donation.findMany({
+    where: {
+
+    },
+  })
+  
+  const totalEarnings = donations.reduce((acc, donation) => {
+    return acc + donation.amount;
+  }, 0);
+
+  res.json (donations);
+}
+
 
 donationRouter.post("/create-donation/:recipientId", async (req: Request, res: Response) => {
   const {recipientId} = req.params
@@ -18,15 +36,35 @@ donationRouter.post("/create-donation/:recipientId", async (req: Request, res: R
 });
 
 
-// donationRouter.get("/", async (req: Request, res: Response) => {
-//   const data = await prisma.donation.findMany({
-//     include: {
-//       donor: true,
-//       recipient: true,
-//     },
-//   });
-//   res.json(data);
-// });
+
+donationRouter.get("/", async (req: Request, res: Response) => {
+  const data = await prisma.donation.findMany({
+    include: {
+      donor: true,
+      recipient: true,
+    },
+  });
+  res.json(data);
+});
+
+
+
+
+donationRouter.get("/recieved/:userId", async (req: Request, res: Response) => {
+  const userId = req.params.userId
+  // const {} = req.body
+  const donations = await prisma.donation.findMany({
+    where: {
+      recipientId : userId,
+      amount:{
+        equals : 10
+      }
+    }
+  })
+  res.json(donations)
+})
+
+
 
 donationRouter.get("/total-earnings/:userId", async (req: Request, res: Response) => {
   const userId = req.params.userId
@@ -44,16 +82,3 @@ donationRouter.get("/total-earnings/:userId", async (req: Request, res: Response
   res.json({totalEarnings : totalEarnings})
 })
 
-donationRouter.get("/recieved/:userId", async (req: Request, res: Response) => {
-  const userId = req.params.userId
-  // const {} = req.body
-  const donations = await prisma.donation.findMany({
-    where: {
-      recipientId : userId,
-      amount:{
-        equals : 10
-      }
-    }
-  })
-  res.json(donations)
-})
