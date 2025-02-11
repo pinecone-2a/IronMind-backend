@@ -54,6 +54,15 @@ model Profile {
   updatedAt       DateTime @default(now())
 }
 
+
+model Otp {
+  id        String   @id @default(nanoid())
+  code      Int
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
 model Donation {
   id                      String @id @default(nanoid())
   amount                  Int
