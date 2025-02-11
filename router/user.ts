@@ -25,12 +25,88 @@ userRouter.post("/auth/sign-up", async (req: Request, res: Response) => {
   res.status(201).json({user});
 });
 
+userRouter.put("/update/userId", async (req: Request, res: Response) => {
+  
+  const nodemailer = require("nodemailer");
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // true for port 465, false for other ports
+    auth: {
+      user: "ironmind012@gmail.com",
+      pass: "mllr ygjj lwub vxyh",
+    },
+
+   
+  });
+
+
+
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      res.status(400).json({ message: "User doesn't exists" });
+    } else {
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  const info = await transporter.sendMail({
+    from: "<ironmind012@gmail.com>", // sender address
+    to: email, // list of receivers
+    subject: "Buy me Coffee OTP", // Subject line
+    text:"uabduwdb", // plain text body
+    html: `<h1>Your OTP is ${otp}</h1>`, // html body
+  });
+  console.log(String(otp))
+
+  await prisma.otp.create({
+    data: {
+      email: req.body.email,
+      code: Number(otp),
+  
+    }
+      
+  })
+
+  res.status(200).json({message: "OTP sent to your email" })
+
+}
+
+})
+
+userRouter.patch("/auth/verifyOTP", async (req: Request, res: Response) => {  
+  const email = req.body.email;
+  const code = req.body.code;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user) {  
+  
+      const otp = await prisma.otp.findFirst({
+        where: {
+          email: email, 
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+ 
+      
+    
+  }); 
+
+  if (otp?.code === code) {
+    res.status(200).json({message: "OTP Verified"})
+  } else {
+    res.status(400).json({message: "Invalid OTP"})
+  }
+  }
+})
+
+
+
 userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     res.status(400).json({ error: "User doesn't exists" });
  }
+
 
   if (user?.password) {
     const isMatch = bcryptjs.compareSync(password, user.password);
@@ -52,6 +128,11 @@ userRouter.get("/", async (req: Request, res: Response) => {
   const data = await prisma.user.findMany();
   res.json(data);
 });
+
+
+
+
+
 
 // userRouter.get("/getId", async (req: Request, res: Response) => {
 
