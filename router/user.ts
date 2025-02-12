@@ -1,10 +1,21 @@
 import { Express } from "express";
 import { Router, Request, Response } from "express";
 import { prisma } from "..";
+import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
-import bcryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken"
+import * as dotenv from 'dotenv';
+import { generateAccessToken } from "./generateAccessToken";
+import verify from "./verify";
+import verifyToken from "./verify";
+
+require('dotenv').config();
+dotenv.config()
+
 const express = require("express");
 export const userRouter = Router();
+
 
 userRouter.post("/auth/sign-up", async (req: Request, res: Response) => {
 
@@ -53,7 +64,15 @@ userRouter.put("/update/userId", async (req: Request, res: Response) => {
     to: email, // list of receivers
     subject: "Buy me Coffee OTP", // Subject line
     text:"uabduwdb", // plain text body
-    html: `<h1>Your OTP is ${otp}</h1>`, // html body
+    html: `<div style="max-width:600px;margin:20px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);text-align:center;font-family:Arial,sans-serif;">
+    <div style="font-size:24px;font-weight:bold;color:#ff9900;">☕ BuyMeCoffee</div>
+    <h2>Verify Your Email</h2>
+    <p>Use the OTP below to reset your password:</p>
+    <div style="font-size:28px;font-weight:bold;color:#333;background:#f8f8f8;padding:10px 20px;display:inline-block;border-radius:5px;margin:20px 0;">${otp}</div>
+    <p>If you didn't request this, ignore this email.</p>
+    <div style="font-size:12px;color:#777;margin-top:20px;">&copy; 2025 BuyMeCoffee IronMind. All rights reserved.</div>
+</div>
+`, // html body
   });
   console.log(String(otp))
 
@@ -85,9 +104,7 @@ userRouter.patch("/auth/verifyOTP", async (req: Request, res: Response) => {
         orderBy: {
           createdAt: "desc",
         },
- 
-      
-    
+        
   }); 
 
   if (otp?.code === code) {
@@ -100,33 +117,59 @@ userRouter.patch("/auth/verifyOTP", async (req: Request, res: Response) => {
 
 
 
+
 userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { email, password } = req.body;
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     res.status(400).json({ error: "User doesn't exists" });
- }
-
+   }
 
   if (user?.password) {
     const isMatch = bcryptjs.compareSync(password, user.password);
     if (!isMatch) {
        res.status(400).json({ error: "Invalid password" });
-    } else {
-       res.status(200).json({message: "Log-in Completed"})
+    }  else {
+      const refreshToken = jwt.sign({ email: email}, process.env.REFRESH_TOKEN_SECRET!, {
+      
+      expiresIn: "7d",
+      });
+
+      const accessToken = generateAccessToken(user.email);
+       res.status(200)
+        .cookie("accessToken", accessToken, {
+           httpOnly: true,
+           
+           sameSite: "strict",
+           })
+        .cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            sameSite: "strict",
+
+        })
+        .json({
+        message: "Log-in Completed",
+        accessToken: accessToken  
+
+       })
+       console.log(accessToken)
+       return;
+      
     }
   }
 
-//  bcry(existingUser?.password === password) {
-  
-
-//  }
   
 })
 
-userRouter.get("/", async (req: Request, res: Response) => {
-  const data = await prisma.user.findMany();
-  res.json(data);
+userRouter.get("/profile", verifyToken, (req, res) => {
+  const decodedUser = jwt.decode(req.cookies.accessToken!);
+  res.json({ message: "User authenticated", user: req.user });
+});
+
+userRouter.get("/token", (req: Request, res: Response) => {
+  const decodedUser = jwt.decode(req.cookies.accessToken!);
+  console.log("decodedUser", decodedUser);
+  res.json({ message: "User authenticated", user: decodedUser });
 });
 
 
