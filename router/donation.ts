@@ -27,9 +27,11 @@ donationRouter.post("/create-donation/:recipientId", async (req: Request, res: R
   const {body} = req
   const donation = await prisma.donation.create({
     data: {
-      ...body,
-      donorId: "KEUUmof9rIwwDRYAGGzni",
-      recipientId: recipientId,
+      amount: 8210,
+      specialMessage: "buy coffee",
+      socialURLOrBuyMeACoffee: "dhiwahdidaw",
+      donorId: "24",
+      recipientId: "42f4"
     },
   });
   res.json(donation);
@@ -39,9 +41,9 @@ donationRouter.post("/create-donation/:recipientId", async (req: Request, res: R
 
 donationRouter.get("/", async (req: Request, res: Response) => {
   const data = await prisma.donation.findMany({
-    include: {
-      donor: true,
-      recipient: true,
+    select: {
+      donorId: true,
+      recipientId: true,
     },
   });
   res.json(data);

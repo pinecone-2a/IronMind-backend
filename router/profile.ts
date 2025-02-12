@@ -8,13 +8,13 @@ profileRouter.post("/", async (req: Request, res: Response) => {
   try {
     const profile = await prisma.profile.create({
       data: {
-        name: "hellowcz",
-        about: "hellow",
-        avatarImage: "hellow",
-        socialMediaURL: "hellow",
-        backgroundImage: "hellow",
-        successMessage: "hellow",
-        userId: "hellofewwdwdwad",
+        name: req.body.name,
+        about: req.body.about,
+        avatarImage: req.body.avatarImage,
+        socialMediaURL: req.body.socialMediaURL,
+        backgroundImage: req.body.backgroundImage,
+        successMessage: req.body.successMessage,
+        userId: req.body.userId,
       },
     });
     res.json(profile);
