@@ -8,7 +8,7 @@ donationRouter.post("/create-donation", async (req: Request, res: Response) => {
   const { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId } = req.body;
 
   try {
-    const donation = await Prisma.donation.create({
+    const donation = await Prisma.Donation.create({
       data: { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId },
     });
 
@@ -24,7 +24,7 @@ donationRouter.get("/donation/received/:userId", async (req: Request, res: Respo
   const { userId } = req.params;
 
   try {
-    const donations = await Prisma.donation.findMany({
+    const donations = await Prisma.Donation.findMany({
       where: { recipientId: parseInt(userId) },
       orderBy: { createdAt: "desc" },
     });
@@ -45,7 +45,7 @@ donationRouter.get("/total-earnings/:userId", async (req: Request, res: Response
     const last30Days = new Date();
     last30Days.setDate(today.getDate() - 30); 
 
-    const totalEarnings = await Prisma.donation.aggregate({
+    const totalEarnings = await Prisma.Donation.aggregate({
       where: {
         recipientId: parseInt(userId),
         createdAt: { gte: last30Days }, 
@@ -65,7 +65,7 @@ donationRouter.get("/:userId", async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   try {
-    const sentDonations = await Prisma.donation.findMany({
+    const sentDonations = await .Donation.findMany({
       where: { donorId: parseInt(userId) },
       orderBy: { createdAt: "desc" },
     });
