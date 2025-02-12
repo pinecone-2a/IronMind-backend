@@ -177,13 +177,3 @@ userRouter.get("/token", (req: Request, res: Response) => {
 
 
 
-// userRouter.get("/getId", async (req: Request, res: Response) => {
-
-//   const username = req.query.username as string; 
-//   const userId = await prisma.user.findUnique({
-//     where: { username: username },
-//     select: { id: true }, 
-//   });
-//   res.json(userId)
-
-// })
