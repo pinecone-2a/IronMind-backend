@@ -19,12 +19,13 @@ const cors = require('cors')
 export const prisma = new PrismaClient();
 
 
+
+app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:3000", // Adjust this for production
   credentials: true
 }));
-app.use(express.json());
-app.use(cookieParser());
 
 app.use("/bankcard/", bankCardRouter);
 app.use("/donation/", donationRouter);

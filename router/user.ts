@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import * as dotenv from "dotenv";
 import { generateAccessToken } from "./generateAccessToken";
 import verify from "./verify";
-import verifyToken from "./verify";
+import jwtdecode, { jwtDecode } from "jwt-decode";
 
 require("dotenv").config();
 dotenv.config();
@@ -112,44 +112,39 @@ userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
   if (user?.password) {
     const isMatch = bcryptjs.compareSync(password, user.password);
     if (!isMatch) {
-      res.status(400).json({ error: "Invalid password" });
-    } else {
-      const refreshToken = jwt.sign(
-        { email: email },
-        process.env.REFRESH_TOKEN_SECRET!,
-        {
-          expiresIn: "7d",
-        }
-      );
-
-      const accessToken = generateAccessToken(user.email);
-      res
-        .status(200)
+       res.status(400).json({ error: "Invalid password" });
+    }  else {
+      const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "7d" });
+      const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "1h" });
+       res
         .cookie("accessToken", accessToken, {
-          httpOnly: true,
-
-          sameSite: "strict",
-        })
+           httpOnly: true,
+           secure: true,
+           sameSite: "strict",
+           })
         .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
+            httpOnly: true,
+            secure: true,
           sameSite: "strict",
         })
         .json({
-          message: "Log-in Completed",
-          accessToken: accessToken,
-        });
-      console.log(accessToken);
-      return;
+        message: "Log-in Completed",
+        accessToken: accessToken  
+
+       })
+       console.log("accessToken", accessToken)
     }
   }
 });
 
-userRouter.get("/profile", verifyToken, (req, res) => {
-  const decodedUser = jwt.decode(req.cookies.accessToken!);
-  res.json({ message: "User authenticated", user: req.user });
+userRouter.post("/profile", verify, (req, res) => {
+  console.log("req_cookies",req.cookies)
+  const decodedUser = jwtDecode(req.cookies.accessToken!);
+  console.log("decodedUser", decodedUser);
+  res.json({ message: "User authenticated", user: decodedUser });
 });
 
-userRouter.get("/token", (req: Request, res: Response) => {
+userRouter.post("/token", (req: Request, res: Response) => {
   const decodedUser = jwt.decode(req.cookies.accessToken!);
   console.log("decodedUser", decodedUser);
   res.json({ message: "User authenticated", user: decodedUser });
