@@ -13,7 +13,7 @@ require('dotenv').config();
 dotenv.config()
 const express = require("express");
 const app = express();
-const port = 5000;
+const port = 4500;
 const cors = require('cors')
 
 export const prisma = new PrismaClient();

@@ -30,3 +30,20 @@ profileRouter.get("/", async (req: Request, res: Response) => {
     res.send("failed to fetch");
   }
 });
+
+profileRouter.put("/:userId", async (req: Request, res: Response) => {
+  try {
+    const {body} = req
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        ...body
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+});
