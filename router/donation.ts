@@ -1,27 +1,80 @@
-import { Express } from "express";
 import { Router, Request, Response } from "express";
-import { prisma } from "..";
-const express = require("express");
+import { Prisma } from "@prisma/client";
 export const donationRouter = Router();
 
-donationRouter.post("/", async (req: Request, res: Response) => {
-  const donation = await prisma.donation.create({
-    data: {
-      amount: 8210,
-      specialMessage: "buy coffee",
-      socialURLOrBuyMeACoffee: "dhiwahdidaw",
-      donorId: "24",
-      recipientId: "42f4"
-    },
-  });
-  res.json(donation);
+
+
+donationRouter.post("/create-donation", async (req: Request, res: Response) => {
+  const { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId } = req.body;
+
+  try {
+    const donation = await Prisma.Donation.create({
+      data: { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId },
+    });
+
+    res.json(donation);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Donation could not be created." });
+  }
 });
-donationRouter.get("/", async (req: Request, res: Response) => {
-  const data = await prisma.donation.findMany({
-    select: {
-      donorId: true,
-      recipientId: true,
-    },
-  });
-  res.json(data);
+
+
+donationRouter.get("/donation/received/:userId", async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const donations = await Prisma.Donation.findMany({
+      where: { recipientId: parseInt(userId) },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(donations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not fetch donations." });
+  }
 });
+
+
+donationRouter.get("/total-earnings/:userId", async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const today = new Date();
+    const last30Days = new Date();
+    last30Days.setDate(today.getDate() - 30); 
+
+    const totalEarnings = await Prisma.Donation.aggregate({
+      where: {
+        recipientId: parseInt(userId),
+        createdAt: { gte: last30Days }, 
+      },
+      _sum: { amount: true },
+    });
+
+    res.json({ earnings: totalEarnings._sum.amount || 0 });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not calculate earnings." });
+  }
+});
+
+
+donationRouter.get("/:userId", async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const sentDonations = await .Donation.findMany({
+      where: { donorId: parseInt(userId) },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(sentDonations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not fetch sent donations." });
+  }
+});
+
+export default donationRouter;

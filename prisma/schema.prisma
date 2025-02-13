@@ -68,8 +68,8 @@ model Donation {
   amount                  Int
   specialMessage          String
   socialURLOrBuyMeACoffee String
-  donorId                 String @unique
-  recipientId             String @unique
+  donorId                 String
+  recipientId             String
 
   donor     User @relation("donor", fields: [donorId], references: [id])
   recipient User @relation("recipient", fields: [recipientId], references: [id])
