@@ -130,20 +130,17 @@ userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
     if (!isMatch) {
        res.status(400).json({ error: "Invalid password" });
     }  else {
-      const refreshToken = jwt.sign({ email: email}, process.env.REFRESH_TOKEN_SECRET!, {
-      
-      expiresIn: "7d",
-      });
-
-      const accessToken = generateAccessToken(user.email);
-       res.status(200)
+      const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "7d" });
+      const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "1h" });
+       res
         .cookie("accessToken", accessToken, {
            httpOnly: true,
-           
+           secure: true,
            sameSite: "strict",
            })
         .cookie("refreshToken", refreshToken, {
             httpOnly: true,
+            secure: true,
             sameSite: "strict",
 
         })
@@ -152,8 +149,8 @@ userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
         accessToken: accessToken  
 
        })
-       console.log(accessToken)
-       return;
+       console.log("accessToken", accessToken)
+
       
     }
   }
