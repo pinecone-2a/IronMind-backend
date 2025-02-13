@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken"
 import * as dotenv from 'dotenv';
 import { generateAccessToken } from "./generateAccessToken";
 import verify from "./verify";
-import verifyToken from "./verify";
+import jwtdecode, { jwtDecode } from "jwt-decode";
 
 require('dotenv').config();
 dotenv.config()
@@ -161,12 +161,14 @@ userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
   
 })
 
-userRouter.get("/profile", verifyToken, (req, res) => {
-  const decodedUser = jwt.decode(req.cookies.accessToken!);
-  res.json({ message: "User authenticated", user: req.user });
+userRouter.post("/profile", verify, (req, res) => {
+  console.log("req_cookies",req.cookies)
+  const decodedUser = jwtDecode(req.cookies.accessToken!);
+  console.log("decodedUser", decodedUser);
+  res.json({ message: "User authenticated", user: decodedUser });
 });
 
-userRouter.get("/token", (req: Request, res: Response) => {
+userRouter.post("/token", (req: Request, res: Response) => {
   const decodedUser = jwt.decode(req.cookies.accessToken!);
   console.log("decodedUser", decodedUser);
   res.json({ message: "User authenticated", user: decodedUser });
