@@ -17,15 +17,15 @@ const port = 5000;
 const cors = require("cors");
 
 export const prisma = new PrismaClient();
-
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://iron-mind-frontend.vercel.app"],
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/bankcard/", bankCardRouter);
 app.use("/donation/", donationRouter);
