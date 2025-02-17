@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://iron-mind-frontend.vercel.app/", // Adjust this for production
+    origin: true,
     credentials: true,
   })
 );
