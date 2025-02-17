@@ -16,7 +16,7 @@ donationRouter.post("/create-donation", async (req: Request, res: Response) => {
     res.json(donation);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "ERROR" });
+    res.status(500).json({ error: "ERRORR" });
   }
 });
 
