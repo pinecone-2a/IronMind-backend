@@ -21,7 +21,7 @@ donationRouter.post("/create-donation", async (req: Request, res: Response) => {
 });
 
 
-donationRouter.get("/donation/received/:userId", async (req: Request, res: Response) => {
+donationRouter.get("/received/:userId", async (req: Request, res: Response) => {
   const { userId } = req.params;
 
   try {
