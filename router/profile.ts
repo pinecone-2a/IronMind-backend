@@ -30,3 +30,15 @@ profileRouter.get("/", async (req: Request, res: Response) => {
     res.send("failed to fetch");
   }
 });
+
+profileRouter.get("view/userId", async (req: Request, res:  Response) => {
+  const userId = req.query.username as string
+  try {
+    const data = await prisma.profile.findUnique({
+      where: { userId : userId },
+      select: {name: true, about: true, backgroundImage: true,}
+    })
+  } catch(error){
+    console.log(error)
+  }
+})
