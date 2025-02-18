@@ -1,6 +1,8 @@
 import { Express } from "express";
 import { Router, Request, Response } from "express";
 import { prisma } from "..";
+import { profile } from "console";
+import { ALL } from "dns";
 const express = require("express");
 export const profileRouter = Router();
 
@@ -32,13 +34,15 @@ profileRouter.get("/", async (req: Request, res: Response) => {
 });
 
 profileRouter.get("/:userId", async (req: Request, res: Response) => {
+  console.log(req.params.userId)
   try {
-    const profile = await prisma.profile.findUnique({
+    const profile = await prisma.user.findUnique({
       where: {
-        id: req.params.userId,
-      },
+        id: req.params.userId },
+        select: {profile: true, bankCard: true}
     });
     res.json(profile);
+    console.log(profile);
   } catch(e) {
     res.send("failed to fetch");
   }
