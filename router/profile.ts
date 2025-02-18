@@ -31,6 +31,37 @@ profileRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
+profileRouter.get("/:userId", async (req: Request, res: Response) => {
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {
+        id: req.params.userId,
+      },
+    });
+    res.json(profile);
+  } catch(e) {
+    res.send("failed to fetch");
+  }
+});
+
+
+profileRouter.put("/:userId", async (req: Request, res: Response) => {
+  try {
+    const {body} = req
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        ...body
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+});
+
 profileRouter.get("view/userId", async (req: Request, res:  Response) => {
   const userId = req.query.username as string
   try {
@@ -42,3 +73,4 @@ profileRouter.get("view/userId", async (req: Request, res:  Response) => {
     console.log(error)
   }
 })
+
