@@ -35,11 +35,11 @@ profileRouter.get("/:userId", async (req: Request, res: Response) => {
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        id: req.params.id,
+        id: req.params.userId,
       },
     });
     res.json(profile);
-  } catch {
+  } catch(e) {
     res.send("failed to fetch");
   }
 });
