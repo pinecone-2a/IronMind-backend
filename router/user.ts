@@ -112,33 +112,44 @@ userRouter.post("/auth/sign-in", async (req: Request, res: Response) => {
   if (user?.password) {
     const isMatch = bcryptjs.compareSync(password, user.password);
     if (!isMatch) {
-       res.status(400).json({ error: "Invalid password" });
-    }  else {
-      const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "7d" });
-      const accessToken = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "1h" });
-       res
+      res.status(400).json({ error: "Invalid password" });
+    } else {
+      const userId = await prisma.user.findUnique({
+        where: { email: email },
+        select: { id: true },
+      });
+      const refreshToken = jwt.sign(
+        { userId },
+        process.env.REFRESH_TOKEN_SECRET!,
+        { expiresIn: "7d" }
+      );
+      const accessToken = jwt.sign(
+        { userId },
+        process.env.ACCESS_TOKEN_SECRET!,
+        { expiresIn: "1h" }
+      );
+      res
         .cookie("accessToken", accessToken, {
-           httpOnly: true,
-           secure: true,
-           sameSite: "strict",
-           })
+          httpOnly: true,
+
+          sameSite: "strict",
+        })
         .cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: true,
+          httpOnly: true,
+
           sameSite: "strict",
         })
         .json({
-        message: "Log-in Completed",
-        accessToken: accessToken  
-
-       })
-       console.log("accessToken", accessToken)
+          message: "Log-in Completed",
+          accessToken: accessToken,
+        });
+      console.log("accessToken", accessToken);
     }
   }
 });
 
 userRouter.post("/profile", verify, (req, res) => {
-  console.log("req_cookies",req.cookies)
+  console.log("req_cookies", req.cookies);
   const decodedUser = jwtDecode(req.cookies.accessToken!);
   console.log("decodedUser", decodedUser);
   res.json({ message: "User authenticated", user: decodedUser });
@@ -149,3 +160,24 @@ userRouter.post("/token", (req: Request, res: Response) => {
   console.log("decodedUser", decodedUser);
   res.json({ message: "User authenticated", user: decodedUser });
 });
+
+userRouter.get("/getUser", async (req: Request, res: Response) => {
+  const { id } = req.body;
+
+  const data = await prisma.user.findUnique({
+    where: { id: id },
+    select: { profile: true, donations: true },
+  });
+  res.json(data);
+});
+
+// userRouter.get("/getId", async (req: Request, res: Response) => {
+
+//   const username = req.query.username as string;
+//   const userId = await prisma.user.findUnique({
+//     where: { email: email },
+//     select: { id: true },
+//   });
+//   res.json(userId)
+
+// })
