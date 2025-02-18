@@ -23,7 +23,7 @@
     "jwt-decode": "^4.0.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
-    "tsx": "^4.19.2"
+    "tsx": "^3.12.10"
   },
   "devDependencies": {
     "@prisma/client": "^6.3.1",
