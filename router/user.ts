@@ -171,6 +171,16 @@ userRouter.get("/getUser", async (req: Request, res: Response) => {
   res.json(data);
 });
 
+userRouter.post("/logout", async (req: Request, res: Response) => {
+
+  res.clearCookie('accessToken')
+  res.clearCookie('refreshToken')
+  res.status(200).json({message: 'Logged out successfully'})
+})
+
+
+
+
 
 userRouter.get("/:userId", async (req: Request, res: Response)=> {
     console.log(req.params.userId)
