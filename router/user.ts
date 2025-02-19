@@ -179,6 +179,21 @@ userRouter.post("/logout", async (req: Request, res: Response) => {
 })
 
 
+userRouter.get("/:userId", async (req: Request, res: Response)=> {
+  console.log(req.params.userId)
+  try {
+    const profile = await prisma.user.findUnique({
+      where: {
+        id: req.params.userId },
+        select: {profile: true, bankCard: true}
+    });
+    res.json(profile);
+    console.log(profile);
+  } catch(e) {
+    res.send("failed to fetch");
+  }
+
+});
 
 
 

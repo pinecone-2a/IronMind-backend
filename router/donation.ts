@@ -5,20 +5,37 @@ export const donationRouter = Router();
 
 
 
-donationRouter.post("/create-donation", async (req: Request, res: Response) => {
-  const { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId } = req.body;
 
-  try {
-    const donation = await prisma.donation.create({
-      data: { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId },
-    });
 
-    res.json(donation);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "ERROR" });
-  }
-});
+// donationRouter.post("/create-donation", async (req: Request, res: Response) => {
+//   const { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId } = req.body;
+//   if (!donorId || !recipientId) {
+//     return res.status(400).json({ error: "Both donorId and recipientId are required" });
+//   }
+//   try {
+//     const donation = await prisma.donation.create({
+//       data: {
+//         amount,
+//         specialMessage,
+//         socialURLOrBuyMeACoffee,
+//         donor: {
+//           connect: { id: donorId }, // Connect donor by ID
+//         },
+//         recipient: {
+//           connect: { id: recipientId }, // Connect recipient by ID
+//         },
+//       },
+//     });
+
+//     res.json(donation);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "ERROR" });
+//   }
+// });
+
+
+
 
 
 donationRouter.get("/received/:userId", async (req: Request, res: Response) => {
