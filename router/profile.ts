@@ -66,10 +66,30 @@ profileRouter.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
-profileRouter.put("/:userId", async (req: Request, res: Response) => {
+profileRouter.put("/updateProfile/:userId", async (req: Request, res: Response) => {
+  try {
+    const { name, about, socialMediaURL } = req.body;
+    // console.log(body)
+    const profile = await prisma.profile.update({
+      where: {
+        userId: req.params.userId,
+      },
+      data: {
+         name: name,
+         about: about,
+         socialMediaURL
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+});
+
+profileRouter.put("/updateBankCard/:userId", async (req: Request, res: Response) => {
   try {
     const { body } = req;
-    const profile = await prisma.profile.update({
+    const bankCard = await prisma.bankcard.update({
       where: {
         id: req.params.id,
       },
@@ -77,7 +97,7 @@ profileRouter.put("/:userId", async (req: Request, res: Response) => {
         ...body,
       },
     });
-    res.json(profile);
+    res.json(bankCard);
   } catch {
     res.send("failed to fetch");
   }
