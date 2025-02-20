@@ -16,7 +16,7 @@ donationRouter.post("/create-donation", async (req: Request, res: Response) => {
     res.json(donation);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "ERROR" });
+    res.status(500).json({ error: "ERRORR" });
   }
 });
 
@@ -77,6 +77,31 @@ donationRouter.get("/:userId", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "ERROR" });
+  }
+});
+
+donationRouter.get("/latest-donors/:recipientId", async (req: Request, res: Response) => {
+  const { recipientId } = req.params;
+ 
+  try {
+    const donors = await prisma.donation.findMany({
+      where: { recipientId },
+      distinct: ["donorId"],
+      select: {
+        donorId: true,
+        amount: true,
+        specialMessage: true,
+        socialURLOrBuyMeACoffee: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
+ 
+    res.json(donors);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching latest donors" });
   }
 });
 
