@@ -33,32 +33,35 @@ profileRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// profileRouter.get("/:userId", async (req: Request, res: Response)=> {
-//   console.log(req.params.userId)
-//   try {
-//     const profile = await prisma.user.findUnique({
-//       where: {
-//         id: req.params.userId },
-//         select: {profile: true, bankCard: true}
-//     });
-//     res.json(profile);
-//     console.log(profile);
-//   } catch(e) {
-//     res.send("failed to fetch");
-//   }
-
-// });
+profileRouter.get(
+  "/getProfile/:userId",
+  async (req: Request, res: Response) => {
+    console.log(req.params.userId);
+    try {
+      const profile = await prisma.user.findUnique({
+        where: {
+          id: req.params.userId,
+        },
+        select: { profile: true, bankCard: true },
+      });
+      res.json(profile);
+      console.log(profile);
+    } catch (e) {
+      res.send("failed to fetch");
+    }
+  }
+);
 profileRouter.get("/:userId", async (req: Request, res: Response) => {
-  console.log(req.params.userId)
+  console.log(req.params.userId);
   try {
     const profile = await prisma.profile.findUnique({
       where: {
-        id: req.params.userId },
-
+        id: req.params.userId,
+      },
     });
     res.json(profile);
     console.log(profile);
-  } catch(e) {
+  } catch (e) {
     res.send("failed to fetch");
   }
 });
@@ -77,15 +80,16 @@ profileRouter.get("/avatarImage/:userId", async (req: Request, res: Response) =>
 })
 
 
+
 profileRouter.put("/:userId", async (req: Request, res: Response) => {
   try {
-    const {body} = req
+    const { body } = req;
     const profile = await prisma.profile.update({
       where: {
         id: req.params.id,
       },
       data: {
-        ...body
+        ...body,
       },
     });
     res.json(profile);
@@ -94,15 +98,14 @@ profileRouter.put("/:userId", async (req: Request, res: Response) => {
   }
 });
 
-profileRouter.get("view/userId", async (req: Request, res:  Response) => {
-  const userId = req.query.username as string
+profileRouter.get("view/userId", async (req: Request, res: Response) => {
+  const userId = req.query.username as string;
   try {
     const data = await prisma.profile.findUnique({
-      where: { userId : userId },
-      select: {name: true, about: true, backgroundImage: true,}
-    })
-  } catch(error){
-    console.log(error)
+      where: { userId: userId },
+      select: { name: true, about: true, backgroundImage: true },
+    });
+  } catch (error) {
+    console.log(error);
   }
-})
-
+});
