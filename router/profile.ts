@@ -114,3 +114,39 @@ profileRouter.get("view/userId", async (req: Request, res: Response) => {
     console.log(error);
   }
 });
+profileRouter.put("/editProfile/:id", async (req: Request, res: Response) => {
+  try {
+    const { name, about, socialMediaURL,avatarImage } = req.body;
+    // console.log(body)
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+         name: name,
+         about: about,
+         socialMediaURL,
+         avatarImage
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+})
+profileRouter.put('/addBackground/:id',async (req: Request, res: Response)=>{
+  try {
+    const { backgroundImage } = req.body;
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+         backgroundImage
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+})

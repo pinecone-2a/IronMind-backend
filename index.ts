@@ -21,7 +21,7 @@ const cors = require("cors");
 export const prisma = new PrismaClient();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://iron-mind-frontend.vercel.app"],
+    origin: ["http://localhost:3001", "https://iron-mind-frontend.vercel.app"],
     credentials: true,
   })
 );
