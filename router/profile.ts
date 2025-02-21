@@ -66,7 +66,25 @@ profileRouter.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
+
+profileRouter.get("/avatarImage/:userId", async (req: Request, res: Response) => {
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {
+        userId: req.params.userId,
+      },
+    });
+    res.json(profile);
+  } catch(e) {
+    res.send("failed to fetch");
+  }
+})
+
+
+
+
 profileRouter.put("/updateProfile/:userId", async (req: Request, res: Response) => {
+
   try {
     const { name, about, socialMediaURL } = req.body;
     // console.log(body)

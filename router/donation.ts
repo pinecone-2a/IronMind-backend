@@ -5,12 +5,21 @@ export const donationRouter = Router();
 
 
 
+
+
 donationRouter.post("/create-donation", async (req: Request, res: Response) => {
   const { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId } = req.body;
 
+  
   try {
     const donation = await prisma.donation.create({
-      data: { amount, specialMessage, socialURLOrBuyMeACoffee, donorId, recipientId },
+      data: {
+        amount,
+        specialMessage,
+        socialURLOrBuyMeACoffee,
+        donorId,
+        recipientId
+      },
     });
 
     res.json(donation);
@@ -19,6 +28,9 @@ donationRouter.post("/create-donation", async (req: Request, res: Response) => {
     res.status(500).json({ error: "ERROR" });
   }
 });
+
+
+
 
 
 donationRouter.get("/received/:userId", async (req: Request, res: Response) => {
