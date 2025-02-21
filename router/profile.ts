@@ -66,6 +66,7 @@ profileRouter.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
+
 profileRouter.get("/avatarImage/:userId", async (req: Request, res: Response) => {
   try {
     const profile = await prisma.profile.findUnique({
@@ -81,10 +82,32 @@ profileRouter.get("/avatarImage/:userId", async (req: Request, res: Response) =>
 
 
 
-profileRouter.put("/:userId", async (req: Request, res: Response) => {
+
+profileRouter.put("/updateProfile/:userId", async (req: Request, res: Response) => {
+
+  try {
+    const { name, about, socialMediaURL } = req.body;
+    // console.log(body)
+    const profile = await prisma.profile.update({
+      where: {
+        userId: req.params.userId,
+      },
+      data: {
+         name: name,
+         about: about,
+         socialMediaURL
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+});
+
+profileRouter.put("/updateBankCard/:userId", async (req: Request, res: Response) => {
   try {
     const { body } = req;
-    const profile = await prisma.profile.update({
+    const bankCard = await prisma.bankcard.update({
       where: {
         id: req.params.id,
       },
@@ -92,7 +115,7 @@ profileRouter.put("/:userId", async (req: Request, res: Response) => {
         ...body,
       },
     });
-    res.json(profile);
+    res.json(bankCard);
   } catch {
     res.send("failed to fetch");
   }
@@ -109,3 +132,39 @@ profileRouter.get("view/userId", async (req: Request, res: Response) => {
     console.log(error);
   }
 });
+profileRouter.put("/editProfile/:id", async (req: Request, res: Response) => {
+  try {
+    const { name, about, socialMediaURL,avatarImage } = req.body;
+    // console.log(body)
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+         name: name,
+         about: about,
+         socialMediaURL,
+         avatarImage
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+})
+profileRouter.put('/addBackground/:id',async (req: Request, res: Response)=>{
+  try {
+    const { backgroundImage } = req.body;
+    const profile = await prisma.profile.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+         backgroundImage
+      },
+    });
+    res.json(profile);
+  } catch {
+    res.send("failed to fetch");
+  }
+})

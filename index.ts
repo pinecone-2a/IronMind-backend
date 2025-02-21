@@ -14,14 +14,14 @@ dotenv.config();
 const express = require("express");
 const app = express();
 
-const port = 5000;
+const port = 4000;
 const cors = require("cors");
 
 
 export const prisma = new PrismaClient();
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://iron-mind-frontend.vercel.app"],
+    origin: ["http://localhost:3001", "https://iron-mind-frontend.vercel.app"],
     credentials: true,
   })
 );
