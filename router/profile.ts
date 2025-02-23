@@ -86,8 +86,8 @@ profileRouter.get("/avatarImage/:userId", async (req: Request, res: Response) =>
 profileRouter.put("/updateProfile/:userId", async (req: Request, res: Response) => {
 
   try {
-    const { name, about, socialMediaURL } = req.body;
-    // console.log(body)
+    const { name, about, socialMediaURL, avatarImage, backgroundImage } = req.body;
+    
     const profile = await prisma.profile.update({
       where: {
         userId: req.params.userId,
@@ -95,7 +95,9 @@ profileRouter.put("/updateProfile/:userId", async (req: Request, res: Response) 
       data: {
          name: name,
          about: about,
-         socialMediaURL
+         socialMediaURL,
+         avatarImage,
+         backgroundImage,
       },
     });
     res.json(profile);
